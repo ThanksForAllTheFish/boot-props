@@ -6,11 +6,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @SpringBootApplication
+@EnableConfigurationProperties(DemoApplication.DemoProperties.class)
 public class DemoApplication {
 
 	public static void main(String[] args) {
@@ -21,18 +22,17 @@ public class DemoApplication {
 	public static class RestController {
 
 		@Autowired
-		private DemoProperties properties;
+		private DemoPropInterface properties;
 
 		@GetMapping
 		public String get() {
-			return properties.prop == null ? "null" : properties.prop;
+			return properties.getProp() == null ? "null" : properties.getProp();
 		}
 	}
 
-	@Component
 	@ConfigurationProperties(prefix = "demo")
 	@Validated
-	public static class DemoProperties {
+	public static class DemoProperties implements DemoPropInterface {
 
 		@NotNull
 		private String prop;
@@ -44,5 +44,10 @@ public class DemoApplication {
 		public String getProp() {
 			return prop;
 		}
+	}
+
+	public interface DemoPropInterface {
+		void setProp(String prop);
+		String getProp();
 	}
 }
